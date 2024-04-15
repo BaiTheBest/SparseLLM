@@ -2,9 +2,11 @@
 
 WORKING IN PROGRESS.
 
-This repository contains the code for our preprint paper "[Gradient-Free Adaptive Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)". This repo is built upon that of the paper [SparseGPT: Massive Language Models Can be Accurately Pruned in One-shot](https://arxiv.org/abs/2301.00774).
+This repository contains the code for our preprint paper "[Gradient-Free Adaptive Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
 
 Specifically, we currently only released the version of AdaGP for pruning OPT-125M, and the complete version will be released soon. Please stay tuned! 
+
+This repo is built upon that of the paper [SparseGPT](https://arxiv.org/abs/2301.00774).
 
 ## Dependencies
 
