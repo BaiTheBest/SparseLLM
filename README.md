@@ -6,7 +6,7 @@ This repository contains the code for our preprint paper "[Gradient-Free Adaptiv
 
 Specifically, we currently only released the version of AdaGP for pruning OPT-125M, and the complete version will be released soon. Please stay tuned! 
 
-This repo is built upon that of the paper [SparseGPT](https://arxiv.org/abs/2301.00774).
+This repo is built upon that of the paper [SparseGPT](https://arxiv.org/abs/2301.00774) and [Wanda](https://arxiv.org/abs/2306.11695).
 
 ## Dependencies
 
