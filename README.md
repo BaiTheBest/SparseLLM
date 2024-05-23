@@ -1,4 +1,4 @@
-# SparseLLM
+# SparseLLM: Towards Global Pruning of LLMs
 
 WORKING IN PROGRESS.
 
