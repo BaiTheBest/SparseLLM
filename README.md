@@ -23,9 +23,6 @@ Our code has been tested on a single NVIDIA A100 40GB.
 ```
 # Prune to 70\% uniform sparsity with SparseLLM
 python sparsellm.py --model facebook/opt-125m --dataset c4 --sparsity 0.7
-
-# Prune to 70\% uniform sparsity with SparseGPT
-python opt.py facebook/opt-125m c4 --sparsity 0.7
 ```
 
 ## Reference
