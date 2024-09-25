@@ -1,8 +1,6 @@
 # *SparseLLM*: Towards Global Pruning of LLMs
 
-WORKING IN PROGRESS.
-
-This repository contains the code for our preprint paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
+This repository contains the code for our NeurIPS 2024 paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
 
 Specifically, we currently only released the version of SparseLLM for pruning OPT-125M, while the complete version will be released soon. Please stay tuned! 
 
