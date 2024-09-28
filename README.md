@@ -30,7 +30,6 @@ The scripts directory contains all the bash commands to replicate the main resul
 Below is an example command for pruning the OPT-125M model using SparseLLM, to achieve 70% sparsity.
 
 ```
-# Prune to 70\% uniform sparsity with SparseLLM
 python opt_main.py \
     --model facebook/opt-125m \
     --dataset c4 \
