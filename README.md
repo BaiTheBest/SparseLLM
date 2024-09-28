@@ -1,6 +1,6 @@
 # *SparseLLM*: Towards Global Pruning of LLMs
 
-This repository contains the code for our NeurIPS 2024 paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
+This repository contains the code for our **NeurIPS 2024** paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
 
 ## Updates
 
