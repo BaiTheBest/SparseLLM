@@ -4,7 +4,7 @@ This repository contains the code for our NeurIPS 2024 paper "[*SparseLLM*: Towa
 
 ## Updates
 
-- <span style="color:green;">&#x2705;</span> **SparseLLM** code for both **OPT** and **LLaMA** models is now available.
+- <span style="color:green;">&#x2705;</span> *SparseLLM* code for both **OPT** and **LLaMA** models is now available.
 - <span style="color:green;">&#x2705;</span> More model types and functionalities will be added soon.
 
 
