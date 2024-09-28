@@ -1,3 +1,6 @@
+# This file will contain helper functions related to the pruning process, including any specialized pruning functions and the SparseGPT functionality.
+# DISCLAIMER: The SparseGPT class is a modified version of the original SparseGPT class. The original SparseGPT class can be found in [SparseGPT: Massive Language Models Can Be Accurately Pruned in One-Shot].
+
 import math
 import time
 
@@ -13,8 +16,17 @@ DEBUG = True
 torch.backends.cuda.matmul.allow_tf32 = False
 torch.backends.cudnn.allow_tf32 = False
 
+def find_layers(module, layers=[nn.Conv2d, nn.Linear], name=''):
+    if type(module) in layers:
+        return {name: module}
+    res = {}
+    for name1, child in module.named_children():
+        res.update(find_layers(
+            child, layers=layers, name=name + '.' + name1 if name != '' else name1
+        ))
+    return res
 
-class SparseGPT:
+class SparseGPT_OPT:
 
     def __init__(self, layer):
         self.layer = layer
