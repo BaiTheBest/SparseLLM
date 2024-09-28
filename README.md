@@ -13,14 +13,13 @@ This repository contains the code for our NeurIPS 2024 paper "[*SparseLLM*: Towa
 This project requires the following core dependencies:
 
 - `Python`: tested on v3.10.14
-- `PyTorch`: tested on v2.4.1 with CUDA 12.2 (A100-SXM4-40GB GPU)
+- `PyTorch`: tested on v2.4.1 with CUDA 12.2 
 - `Transformers`: tested on v4.45.1
 - `Datasets`: tested on v3.0.1
 - `numpy`: tested on v2.1.1
 - `pandas`: tested on v2.2.3
 - `huggingface_hub`: tested on v0.25.1
 - `wandb`: tested on v0.18.2 (for experiment tracking)
-
 
 ## Usage
 
@@ -99,4 +98,4 @@ We sincerely appreciate it 😊
 ## Disclaimer
 
 1. This repository is built upon the work introduced in the papers [SparseGPT](https://arxiv.org/abs/2301.00774) and [Wanda](https://arxiv.org/abs/2306.11695).
-2. **SparseLLM** aims to advance the research on improving fully local pruning methods for large language models (LLMs). Due to the iterative alternating optimization nature of **SparseLLM**, its running time will be longer than one-shot pruning methods such as **SparseGPT** or **Wanda**. Additionally, the performance and numerical stability of the alternating optimization process can be sensitive to the initialization of hyperparameters.
+2. *SparseLLM* aims to advance the research on improving fully local pruning methods for large language models (LLMs). Due to the iterative alternating optimization nature of *SparseLLM*, its running time will be longer than one-shot pruning methods such as SparseGPT or Wanda. Additionally, the performance and numerical stability of the alternating optimization process can be sensitive to the initialization of hyperparameters.
