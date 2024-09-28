@@ -1,32 +1,24 @@
-import time
+# This file will contain functions related to the model such as loading the model, SparseLLM pruning, and evaluation.
 
 import torch
 import torch.nn as nn
-
-from quant import *
 from pruning_utils import *
-from modelutils import *
+from quant import *
+import math
+from transformers import OPTForCausalLM
 
-try:
-    import wandb
-    has_wandb = True
-except:
-    has_wandb = False 
-
-def get_opt(model):
-    import torch
+def get_opt(args):
     def skip(*args, **kwargs):
         pass
     torch.nn.init.kaiming_uniform_ = skip
     torch.nn.init.uniform_ = skip
     torch.nn.init.normal_ = skip
-    from transformers import OPTForCausalLM
-    model = OPTForCausalLM.from_pretrained(model, torch_dtype='auto')
+    model = OPTForCausalLM.from_pretrained(args.model, torch_dtype='auto')
     model.seqlen = model.config.max_position_embeddings
     return model
 
 @torch.no_grad()
-def opt_sequential(model, dataloader, dev):
+def opt_sparsellm(model, dataloader, dev, args):
     print('Starting ...')
 
     use_cache = model.config.use_cache
@@ -87,7 +79,7 @@ def opt_sequential(model, dataloader, dev):
         for name in subset:
             if (not (args.minlayer <= i < args.maxlayer and args.prune_only in name)) == (not args.invert):
               continue
-            gpts[name] = SparseGPT(subset[name])
+            gpts[name] = SparseGPT_OPT(subset[name])
             if args.wbits < 16:
                 gpts[name].quantizer = Quantizer()
                 gpts[name].quantizer.configure(
@@ -119,14 +111,13 @@ def opt_sequential(model, dataloader, dev):
                 )
                 gpts[name].free()
 
-        # Initialize the hyperparameters for the AdaGP method
         # Adjust hyperparameters as needed
         alpha = 5.0
         beta = 5.0
         gamma = 5.0
 
         # Define the number of optimization steps
-        adagp_epochs = 10
+        opt_epochs = 10
 
         # Get the inputs and outputs which are constants here
         X_list = gpts['fc1'].batch_inp
@@ -159,13 +150,13 @@ def opt_sequential(model, dataloader, dev):
         # Pre-compute the pinverse of X and cache it to save computational cost
         Xinv = torch.pinverse(X.to(dtype=torch.float32)).half()
 
-        for adagp_step in range(adagp_epochs):
+        for opt_step in range(opt_epochs):
 
             ##############
             # optimize W
             ##############
 
-            if adagp_step > 0:   # for the first step, no need for updating W
+            if opt_step > 0:   # for the first step, no need for updating W
 
                 # Update the weight matrix of fc1
                 bias = subset['fc1'].bias.unsqueeze(1).expand(-1, z.size(-1))
@@ -191,7 +182,7 @@ def opt_sequential(model, dataloader, dev):
             ##############
 
             # modify gpts[name].H to be our auxiliary variable
-            if adagp_step > 0:   # for the first step, no need for updating H    
+            if opt_step > 0:   # for the first step, no need for updating H    
             
                 tmp_H = torch.zeros_like(gpts['fc2'].H)
                 tmp_p = p.T.reshape((args.nsamples, -1, p.size(0)))
@@ -314,7 +305,7 @@ def opt_sequential(model, dataloader, dev):
     model.config.use_cache = use_cache
 
 @torch.no_grad()
-def opt_eval(model, testenc, dev, dataset: str, log_wandb: bool = False):
+def opt_eval(model, testenc, dev, args, dataset: str):
     print('Evaluating ...')
 
     testenc = testenc.input_ids
@@ -411,122 +402,5 @@ def opt_eval(model, testenc, dev, dataset: str, log_wandb: bool = False):
         nlls.append(neg_log_likelihood)
     ppl = torch.exp(torch.stack(nlls).sum() / (nsamples * model.seqlen))
     print(f"Perplexity: {ppl.item():3f}")
-    if log_wandb:
-         wandb.log({f'{dataset}/perplexity': ppl.item()})
 
     model.config.use_cache = use_cache
-
-
-if __name__ == '__main__':
-    import argparse
-    from datautils import *
-
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        '--model', type=str, default='facebook/opt-125m',
-        help='OPT model to load; pass `facebook/opt-X`.'
-    )
-    parser.add_argument(
-        '--dataset', type=str, choices=['wikitext2', 'ptb', 'c4'], default='c4',
-        help='Where to extract calibration data from.'
-    )
-    parser.add_argument(
-        '--seed',
-        type=int, default=0, help='Seed for sampling the calibration data.'
-    )
-    parser.add_argument(
-        '--nsamples', type=int, default=64,
-        help='Number of calibration data samples.'
-    )
-    parser.add_argument(
-        '--percdamp', type=float, default=.01,
-        help='Percent of the average Hessian diagonal to use for dampening.'
-    )
-    # always remember to change this for different experiments
-    # Current: unstructured sparsity with 50% density
-    parser.add_argument(
-        '--sparsity', type=float, default=0.7,
-        help='Target sparsity'
-    )
-    # always remember to change this for different experiments
-    # Current: no N:M pruning
-    parser.add_argument(
-        '--prunen', type=int, default=0,
-        help='N for N:M pruning.'
-    )
-    # always remember to change this for different experiments
-    # Current: no N:M pruning
-    parser.add_argument(
-        '--prunem', type=int, default=0,
-        help='M for N:M pruning.'
-    )
-    parser.add_argument(
-        '--blocksize', type=int, default=128,
-        help='Blocksize to use for adaptive mask selection.'
-    )
-    parser.add_argument(
-        '--gmp', action='store_true',
-        help='Whether to run the GMP baseline.'
-    )
-    parser.add_argument(
-        '--wbits', type=int, default=16,
-        help='Whether to quantize as well.'
-    )
-    parser.add_argument(
-        '--minlayer', type=int, default=-1,
-        help='Prune all layers with id >= this.'
-    )
-    parser.add_argument(
-        '--maxlayer', type=int, default=1000,
-        help='Prune all layers with id < this.'
-    )
-    parser.add_argument(
-        '--prune_only', type=str, default='',
-        help='Prune only layers that contain this text.'
-    )
-    parser.add_argument(
-       '--invert', action='store_true', 
-       help='Invert subset.'
-    )
-    parser.add_argument(
-       '--save', type=str, default='',
-       help='Path to saved model.'
-    )
-    parser.add_argument(
-       '--log_wandb', action='store_true',
-       help='Whether to log to wandb.'
-    )
-
-    args = parser.parse_args()
-
-    # init W&B logging
-    if args.log_wandb:
-        assert has_wandb, "wandb not installed try `pip install wandb`"
-        wandb.init(config=args)
-
-    model = get_opt(args.model)
-    model.eval()
-
-    dataloader, testloader = get_loaders(
-        args.dataset, nsamples=args.nsamples, seed=args.seed, model=args.model, seqlen=model.seqlen
-    )
-
-    if (args.sparsity or args.prunen) and not args.gmp:
-        tick = time.time()
-        opt_sequential(model, dataloader, DEV)
-        for n, p in model.named_parameters():
-            print(n, torch.mean((p == 0).float()))
-            if 'fc2' in n:
-                break
-        print(time.time() - tick)
-
-    for dataset in ['wikitext2', 'ptb', 'c4']:
-        dataloader, testloader = get_loaders(
-            dataset, seed=args.seed, model=args.model, seqlen=model.seqlen
-        )
-        print(dataset)
-        opt_eval(model, testloader, DEV, dataset, args.log_wandb)
-
-    if args.save:
-        model.save_pretrained(args.save)
