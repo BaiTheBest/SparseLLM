@@ -1,10 +1,10 @@
 # *SparseLLM*: Towards Global Pruning of LLMs
 
-This repository contains the code for our NeurIPS 2024 paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
+This repository contains the code for our **NeurIPS 2024** paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
 
 ## Updates
 
-- <span style="color:green;">&#x2705;</span> **SparseLLM** code for both **OPT** and **LLaMA** models is now available.
+- <span style="color:green;">&#x2705;</span> *SparseLLM* code for both **OPT** and **LLaMA** models is now available.
 - <span style="color:green;">&#x2705;</span> More model types and functionalities will be added soon.
 
 
@@ -30,7 +30,6 @@ The scripts directory contains all the bash commands to replicate the main resul
 Below is an example command for pruning the OPT-125M model using SparseLLM, to achieve 70% sparsity.
 
 ```
-# Prune to 70\% uniform sparsity with SparseLLM
 python opt_main.py \
     --model facebook/opt-125m \
     --dataset c4 \
