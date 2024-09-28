@@ -97,4 +97,6 @@ We sincerely appreciate it 😊
 ## Disclaimer
 
 1. This repository is built upon the work introduced in the papers [SparseGPT](https://arxiv.org/abs/2301.00774) and [Wanda](https://arxiv.org/abs/2306.11695).
-2. *SparseLLM* aims to advance the research on improving fully local pruning methods for large language models (LLMs). Due to the iterative alternating optimization nature of *SparseLLM*, its running time will be longer than one-shot pruning methods such as SparseGPT or Wanda. Additionally, the performance and numerical stability of the alternating optimization process can be sensitive to the initialization of hyperparameters.
+2. *SparseLLM* aims to advance the research on improving fully local pruning methods for large language models (LLMs). Due to the iterative alternating optimization nature of *SparseLLM*, its running time will be longer than that of one-shot pruning methods (roughly number of iteration times) such as SparseGPT or Wanda. Additionally, the performance and numerical stability of the alternating optimization process can be sensitive to the initialization of hyperparameters.
+3. *SparseLLM* relies on auxiliary variables to achieve subproblem decomposition, which inevitably introduces additional memory overhead. For larger models like LLaMA-2-7B and beyond, we used a smaller calibration data size (e.g., 64 or 32) to ensure the code could run on an A100 40GB GPU. We are actively working on optimizing the GPU memory consumption and improving the efficiency of the code to support larger models and data sizes more effectively.
+
