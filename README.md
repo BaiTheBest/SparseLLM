@@ -42,6 +42,8 @@ We provide a quick overview of the key arguments:
 - `--dataset`: The dataset to use for evaluation. We support datasets like `c4`, `wikitext2`, and `ptb`.
 - `--sparsity`: The desired sparsity level (percentage of weights to be pruned).
 
+**Remark:** OPT-350M is currently not supported by our method, due to potential numerical stability issue.
+
 ### Example for Pruning LLaMA-2:
 
 For **LLaMA-2** models, use the llama_main.py file and specify the model path as `meta-llama/Llama-2-7b-hf`. Here is an example command for pruning LLaMA-2-7B:

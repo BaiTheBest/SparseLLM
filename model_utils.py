@@ -362,11 +362,6 @@ def llama_sparsellm(model, dataloader, dev, args):
 
     print("Ready.")
 
-    # Control which layers to prune
-    prune_layer_index = [1, 2]
-    prune_layer_index = [x - 1 for x in prune_layer_index]
-    print('Decoder layers to prune:', prune_layer_index)
-
     for i in range(len(layers)):
         layer = layers[i].to(dev)
         full = find_layers(layer)
@@ -413,20 +408,19 @@ def llama_sparsellm(model, dataloader, dev, args):
 
             target_layer_names = ["mlp.up_proj", "mlp.gate_proj", "mlp.down_proj"]
 
-            if i in prune_layer_index:
-                for name in subset:
-                    if name not in target_layer_names:   
-                        print(i, name)
-                        print("Pruning ...")
-                        sparsity = args.sparsity
-                        gpts[name].fasterprune(
-                            sparsity,
-                            prunen=args.prunen,
-                            prunem=args.prunem,
-                            percdamp=args.percdamp,
-                            blocksize=args.blocksize,
-                        )
-                        gpts[name].free()
+            for name in subset:
+                if name not in target_layer_names:   
+                    print(i, name)
+                    print("Pruning ...")
+                    sparsity = args.sparsity
+                    gpts[name].fasterprune(
+                        sparsity,
+                        prunen=args.prunen,
+                        prunem=args.prunem,
+                        percdamp=args.percdamp,
+                        blocksize=args.blocksize,
+                    )
+                    gpts[name].free()
 
             # Adjust hyperparameters as needed
             alpha = 5.0
@@ -434,9 +428,7 @@ def llama_sparsellm(model, dataloader, dev, args):
             gamma = 5.0
 
             # Define the number of global pruning epochs
-            opt_epochs = 0  # This might need to be adjusted
-            if i in prune_layer_index:
-                opt_epochs = 8
+            opt_epochs = 8  # This might need to be adjusted
 
             # Get the inputs and outputs which are constants here
             X_list = gpts['mlp.up_proj'].batch_inp
