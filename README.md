@@ -2,7 +2,7 @@
 
 This repository contains the code for our **NeurIPS 2024** paper "[*SparseLLM*: Towards Global Pruning for Pre-trained Language Models](https://arxiv.org/abs/2402.17946)".
 
-*WORKING IN PROGRESS*: Our current released code is for preview purposes only and may be subject to numerical instability issues. We are actively working on a more stable version of our method, with an estimated release date around the time our camera-ready paper is out in November-December. 
+*WORKING IN PROGRESS*: Our current released code is for preview purposes only and may be subject to numerical instability issues. We are actively working on a more stable version of our method, with an estimated release date around the time our camera-ready paper is out. 
 
 ## Updates
 
