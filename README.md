@@ -89,10 +89,10 @@ python llama_main.py \
 If you find this code useful in your research, please consider citing:
 
 ```bibtex
-@article{bai2024gradient,
-  title={Gradient-Free Adaptive Global Pruning for Pre-trained Language Models},
+@inproceedings{bai2024sparsellm,
+  title={SparseLLM: Towards Global Pruning of Pre-trained Language Models},
   author={Bai, Guangji and Li, Yijiang and Ling, Chen and Kim, Kibaek and Zhao, Liang},
-  journal={arXiv preprint arXiv:2402.17946},
+  booktitle={The Thirty-eighth Annual Conference on Neural Information Processing Systems},
   year={2024}
 }
 ```
