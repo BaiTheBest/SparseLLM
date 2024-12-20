@@ -128,7 +128,7 @@ def opt_sparsellm(model, dataloader, dev, args):
         gamma = 0.1
 
         # Define the number of optimization steps
-        opt_epochs = 10
+        opt_epochs = 4
 
         # Get the inputs and outputs which are constants here
         X_list = gpts['fc1'].batch_inp
@@ -178,34 +178,23 @@ def opt_sparsellm(model, dataloader, dev, args):
                 del bias, weight_matrix_1
 
                 # Update the weight matrix of fc2
-                if args.sparsity < 0.8:
-                    pinv = torch.pinverse(p.to(dtype=torch.float32)).half()
-                    bias = subset['fc2'].bias.unsqueeze(1).expand(-1, Y.size(-1))
-                    # Calculate the weight matrix
-                    weight_matrix_2 = torch.matmul(Y - bias, pinv)
+                weight_matrix_2 = copy.deepcopy(gpts['fc2'].layer.weight).to(dtype=torch.float32).requires_grad_(True)
+                bias = subset['fc2'].bias.unsqueeze(1).expand(-1, Y.size(-1))
+                learning_rate = 0.01
+                w_epochs = 10
+                for _ in range(w_epochs):
+                    with torch.enable_grad():  
+                        y_pred = torch.matmul(weight_matrix_2, p.to(dtype=torch.float32)) + bias.to(dtype=torch.float32)
+                        loss = (y_pred - Y.to(dtype=torch.float32)).pow(2).mean()  # L2 loss
+                    loss.backward()
+                    weight_matrix_2 -= learning_rate * weight_matrix_2.grad                    
+                    weight_matrix_2.grad.zero_()
+                weight_matrix_2 = weight_matrix_2.half()
                     # assign the new parameters to gpts class
-                    gpts['fc2'].layer.weight.copy_(weight_matrix_2)
-
-                    del bias, weight_matrix_2, pinv
-                    torch.cuda.empty_cache()
-                else:
-                    weight_matrix_2 = copy.deepcopy(gpts['fc2'].layer.weight).to(dtype=torch.float32).requires_grad_(True)
-                    bias = subset['fc2'].bias.unsqueeze(1).expand(-1, Y.size(-1))
-                    learning_rate = 0.01
-                    w_epochs = 10
-                    for _ in range(w_epochs):
-                        with torch.enable_grad():  
-                            y_pred = torch.matmul(weight_matrix_2, p.to(dtype=torch.float32)) + bias.to(dtype=torch.float32)
-                            loss = (y_pred - Y.to(dtype=torch.float32)).pow(2).mean()  # L2 loss
-                        loss.backward()
-                        weight_matrix_2 -= learning_rate * weight_matrix_2.grad                    
-                        weight_matrix_2.grad.zero_()
-                    weight_matrix_2 = weight_matrix_2.half()
-                     # assign the new parameters to gpts class
-                    gpts['fc2'].layer.weight.copy_(weight_matrix_2)
-               
-                    del bias, weight_matrix_2, y_pred
-                    torch.cuda.empty_cache()
+                gpts['fc2'].layer.weight.copy_(weight_matrix_2)
+            
+                del bias, weight_matrix_2, y_pred
+                torch.cuda.empty_cache()
 
             ##############
             # prune W
