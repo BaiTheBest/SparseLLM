@@ -12,7 +12,7 @@ def main():
     parser.add_argument('--seed', type=int, default=0, help='Seed for sampling the calibration data.')
     parser.add_argument('--nsamples', type=int, default=64, help='Number of calibration data samples.')
     parser.add_argument('--percdamp', type=float, default=.01, help='Percent of the average Hessian diagonal to use for dampening.')
-    parser.add_argument('--sparsity', type=float, default=0.7, help='Target sparsity')
+    parser.add_argument('--sparsity', type=float, default=0.5, help='Target sparsity')
     parser.add_argument('--prunen', type=int, default=0, help='N for N:M pruning.')
     parser.add_argument('--prunem', type=int, default=0, help='M for N:M pruning.')
     parser.add_argument('--blocksize', type=int, default=128, help='Blocksize to use for adaptive mask selection.')
