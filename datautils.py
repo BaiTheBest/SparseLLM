@@ -73,7 +73,7 @@ def get_c4(nsamples, seed, seqlen, model, tokenizer):
 
     random.seed(seed)
     trainloader = []
-    for _ in range(nsamples):
+    for i in range(nsamples):
         while True:
             i = random.randint(0, len(traindata) - 1)
             trainenc = tokenizer(traindata[i]['text'], return_tensors='pt')
