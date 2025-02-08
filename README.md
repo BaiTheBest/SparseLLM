@@ -15,7 +15,7 @@ This repository contains the code for our **NeurIPS 2024** paper "[*SparseLLM*: 
 This project requires the following core dependencies:
 
 - `Python`: tested on v3.10.14
-- `PyTorch`: tested on v2.4.1 with CUDA 12.2 
+- `PyTorch`: tested on v2.4.1 with CUDA 12.4 
 - `Transformers`: tested on v4.45.1
 - `Datasets`: tested on v3.0.1
 - `numpy`: tested on v2.1.1
