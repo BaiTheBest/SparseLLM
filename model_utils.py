@@ -437,7 +437,9 @@ def llama_sparsellm(model, dataloader, dev, args):
             gamma = 5.0
 
             # Define the number of global pruning epochs
-            opt_epochs = 8  # This might need to be adjusted
+            opt_epochs = 4  # This might need to be adjusted
+            if i == 1 or i == 30 or i == 31:
+                opt_epochs = 1
 
             # Get the inputs and outputs which are constants here
             X_list = gpts['mlp.up_proj'].batch_inp
